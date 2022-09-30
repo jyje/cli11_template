@@ -92,17 +92,16 @@ namespace progress {
 
             static std::string point2string(std::chrono::system_clock::time_point tp) {
                 std::time_t time = std::chrono::system_clock::to_time_t(tp);                
+                struct tm timeinfo;
 
                 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-                    struct tm timeinfo;
                     localtime_s(&timeinfo, &time);
-                    auto validTime = &timeinfo;
                 #else // __linux__
-                    auto validTime = std::localtime(&time);
+                    localtime_r(&time, &timeinfo);
                 #endif
                 
                 std::stringstream ss;
-                ss << std::put_time(validTime, "%Y-%m-%d %H:%M:%S");
+                ss << std::put_time(&timeinfo, "%Y-%m-%d %H:%M:%S");
 
                 return ss.str();
             }
