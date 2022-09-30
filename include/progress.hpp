@@ -35,8 +35,8 @@ namespace progress {
             int rpad = count - lpad;
 
             int lineCount = 1;                
-            if (prefix.length() > 0) lineCount += 1 + std::count(prefix.begin(), prefix.end(), '\n');
-            if (suffix.length() > 0) lineCount += 1 + std::count(suffix.begin(), suffix.end(), '\n');
+            if (prefix.length() > 0) lineCount += 1 + int(std::count(prefix.begin(), prefix.end(), '\n'));
+            if (suffix.length() > 0) lineCount += 1 + int(std::count(suffix.begin(), suffix.end(), '\n'));
             
             if (lineCount > 1 && current != 0) {
                 for (int index = 0; index < lineCount; index++) {
@@ -54,12 +54,12 @@ namespace progress {
     class Time {
         private:
             bool _is_hiding_time = false;
-            std::chrono::_V2::system_clock::time_point _a_point;
-            std::chrono::_V2::system_clock::time_point _b_point;
+            std::chrono::system_clock::time_point _a_point;
+            std::chrono::system_clock::time_point _b_point;
             
         public:
-            std::chrono::_V2::system_clock::time_point tic_point;
-            std::chrono::_V2::system_clock::time_point toc_point;
+            std::chrono::system_clock::time_point tic_point;
+            std::chrono::system_clock::time_point toc_point;
 
             Time(bool is_hiding_time = false)  {
                 this->_is_hiding_time = is_hiding_time;
@@ -72,7 +72,7 @@ namespace progress {
                 double divided;
                 double fractional = modf(input, &divided);
 
-                int inSeconds = (int)divided;
+                int inSeconds = int(divided);
                 int inMinutes = int(floor(inSeconds / 60.0));
                 int inHours = int(floor(inMinutes / 60.0));
 
@@ -90,19 +90,29 @@ namespace progress {
                 return output.str();
             }
 
-            static std::string point2string(std::chrono::_V2::system_clock::time_point tp) {
+            static std::string point2string(std::chrono::system_clock::time_point tp) {
                 std::time_t time = std::chrono::system_clock::to_time_t(tp);                
+
+                #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+                    struct tm timeinfo;
+                    localtime_s(&timeinfo, &time);
+                    auto validTime = &timeinfo;
+                #else // __linux__
+                    auto validTime = std::localtime(&time);
+                #endif
+                
                 std::stringstream ss;
-                ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+                ss << std::put_time(validTime, "%Y-%m-%d %H:%M:%S");
+
                 return ss.str();
             }
 
-            static double pointDiff(std::chrono::_V2::system_clock::time_point a, std::chrono::_V2::system_clock::time_point b) {
+            static double pointDiff(std::chrono::system_clock::time_point a, std::chrono::system_clock::time_point b) {
                 auto duration = std::chrono::duration_cast<std::chrono::microseconds>(b - a);
                 return duration.count()/1000.0;
             }
 
-            std::chrono::_V2::system_clock::time_point tic(bool is_hiding_time = false) {
+            std::chrono::system_clock::time_point tic(bool is_hiding_time = false) {
                 this->_a_point = this->_b_point = this->tic_point = this->toc_point = std::chrono::system_clock::now();
 
                 if (!is_hiding_time && !this->_is_hiding_time) {
@@ -112,7 +122,7 @@ namespace progress {
                 return this->tic_point;
             }
 
-            std::chrono::_V2::system_clock::time_point toc(bool is_hiding_time = false) {
+            std::chrono::system_clock::time_point toc(bool is_hiding_time = false) {
                 this->_a_point = this->_b_point;
                 this->_b_point = this->toc_point = std::chrono::system_clock::now();
 
@@ -181,8 +191,8 @@ namespace progress {
                 tail = progress::padLines(tailStream, statusWidth);
 
                 if (current == 0) {
-                    int frontLineCount = std::count(front.begin(), front.end(), '\n');
-                    int tailLineCount = std::count(tail.begin(), tail.end(), '\n');
+                    int frontLineCount = int(std::count(front.begin(), front.end(), '\n'));
+                    int tailLineCount = int(std::count(tail.begin(), tail.end(), '\n'));
 
                     std::stringstream frontDummy{" "};
                     if (frontLineCount > 0) frontDummy << std::string(frontLineCount, '\n');

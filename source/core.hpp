@@ -10,7 +10,7 @@ namespace Core {
         progress::Time time;
         time.tic();
         std::cout << std::endl;
-        time.check(0, number);
+        time.check(0.0f, float(number));
 
         std::stringstream stream{message};
 
@@ -18,7 +18,7 @@ namespace Core {
             std::this_thread::sleep_for(std::chrono::milliseconds(duration)); // 'thread' included
             
             time.toc(true);
-            time.check(index + 1, number, &stream);
+            time.check(float(index + 1), float(number), &stream);
         }
         time.toc();
 
