@@ -1,5 +1,4 @@
 #include "args.hpp"
-#include "core.hpp"
 
 Args* Args::_instance = nullptr;
 
@@ -13,28 +12,30 @@ Args& Args::getInstance() {
 
 Args::Args() {
     if (this->_set_version_flag) {
-        this->app.set_version_flag("-v, --version", Args::_program_version);
+        this->_app.set_version_flag("-v, --version", Args::_program_version);
     }
 
-    this->app.description(Args::_program_description);
+    this->_app.description(Args::_program_description);
+    
+    auto format= std::make_shared<CLI::Formatter>();
+    format->column_width(Args::_column_width);
+
+    this->_app.formatter(format);
 }
 
 Args::~Args() {
-    //// TODO: delete all arrays
-    delete[] this->argv;
+
 }
 
 int Args::parseArgs(int argc, char* argv[]) {
-    this->argc = argc;
-    this->argv = argv;
 
-    this->app.callback([&]() {
+    this->_app.callback([&]() {
         return this->doEmptyWork();
     });
 
     this->doMain();
 
-    CLI11_PARSE(app, argc, argv);
+    CLI11_PARSE(this->_app, argc, argv);
 
     return EXIT_SUCCESS;
 }
@@ -53,7 +54,7 @@ void Args::doMain() {
     std::string name = "process";
     std::string description = "Do dummy process with progress display.";
 
-    auto sub = this->app.add_subcommand(name, description);
+    auto sub = this->_app.add_subcommand(name, description);
 
     sub->add_option("-n, --number", this->process_number, "Set a process number.")
         ->default_val<int>(500)

@@ -6,7 +6,7 @@ project(${MY_PROJECT_NAME})
 
 set(CMAKE_BUILD_TYPE Debug) # Debug or Release
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build)
 
 include_directories(

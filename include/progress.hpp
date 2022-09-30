@@ -24,6 +24,33 @@ namespace progress {
         return output.str();
     }
 
+    namespace bar {
+        static void display(float current, float total, std::string prefix = "", std::string barfix = "", std::string suffix = "") {
+            const char pb[] = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+            const int count = sizeof(pb) / sizeof(*pb) - 1;
+
+            float rate = current / total;
+            int val = (int)(rate * 100);
+            int lpad = (int)(rate * count);
+            int rpad = count - lpad;
+
+            int lineCount = 1;                
+            if (prefix.length() > 0) lineCount += 1 + std::count(prefix.begin(), prefix.end(), '\n');
+            if (suffix.length() > 0) lineCount += 1 + std::count(suffix.begin(), suffix.end(), '\n');
+            
+            if (lineCount > 1 && current != 0) {
+                for (int index = 0; index < lineCount; index++) {
+                    printf("\x1b[A");
+                }
+            }
+
+            if (prefix.length() > 0) std::cout << prefix << std::endl;
+            printf("\r %3d%% [%.*s%*s] %s\n", val, lpad, pb, rpad, "", barfix.c_str());
+            if (suffix.length() > 0) std::cout << suffix << std::endl;
+            fflush(stdout);
+        }    
+    };
+
     class Time {
         private:
             bool _is_hiding_time = false;
@@ -104,31 +131,6 @@ namespace progress {
                 return Time::pointDiff(this->tic_point, this->toc_point);
             }
 
-            static void display(float current, float total, std::string prefix = "", std::string barfix = "", std::string suffix = "") {
-                const char pb[] = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                const int count = sizeof(pb) / sizeof(*pb) - 1;
-
-                float rate = current / total;
-                int val = (int)(rate * 100);
-                int lpad = (int)(rate * count);
-                int rpad = count - lpad;
-
-                int lineCount = 1;                
-                if (prefix.length() > 0) lineCount += 1 + std::count(prefix.begin(), prefix.end(), '\n');
-                if (suffix.length() > 0) lineCount += 1 + std::count(suffix.begin(), suffix.end(), '\n');
-                
-                if (lineCount > 1 && current != 0) {
-                    for (int index = 0; index < lineCount; index++) {
-                        printf("\x1b[A");
-                    }
-                }
-
-                if (prefix.length() > 0) std::cout << prefix << std::endl;
-                printf("\r %3d%% [%.*s%*s] %s\n", val, lpad, pb, rpad, "", barfix.c_str());
-                if (suffix.length() > 0) std::cout << suffix << std::endl;
-                fflush(stdout);
-            }
-
             void check(float current, float total, std::stringstream *frontStream = nullptr) {
                 const int statusWidth = 80;
                 const int headerIndent = 25;
@@ -188,13 +190,13 @@ namespace progress {
                     std::stringstream tailDummy{" "};
                     if (tailLineCount > 0) tailDummy << std::string(tailLineCount, '\n');
 
-                    Time::display(0, total, frontDummy.str(), "", tailDummy.str());
+                    progress::bar::display(0, total, frontDummy.str(), "", tailDummy.str());
                     return;
                 }
 
                 middleStream << (int)current << " / " << (int)total;
 
-                Time::display(current, total, front, middleStream.str(), tail);
+                progress::bar::display(current, total, front, middleStream.str(), tail);
             }
     };
 };
