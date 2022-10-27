@@ -3,14 +3,14 @@
 
 #include <iostream>
 #include <CLI/CLI.hpp>
-#include "core.hpp"
+#include "../source/method.hpp"
 
 class Args {
     private:
         static Args* _instance;
 
         const std::string _program_name{"cli11_template"};
-        const std::string _program_version{"0.0.1"};
+        const std::string _program_version{"0.0.2"};
         const std::string _program_description{"My Template for CLI11"};
         const bool _showing_empty_help{false};
         const int _column_width{40};
