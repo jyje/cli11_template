@@ -9,20 +9,11 @@ set(CMAKE_BUILD_TYPE Debug) # Debug or Release
 set(CMAKE_CXX_STANDARD 11)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build)
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/source
-)
-
-#link_directories()
-
 file(GLOB PROJECT_SOURCES
   include/*.hpp
   source/*.cpp
   source/*.hpp
 )
-
-add_executable(${MY_PROJECT_NAME} ${PROJECT_SOURCES})
 
 message("-- Fetch Packages")
 
@@ -43,6 +34,5 @@ message(" >> Fetch CLI11 - done")
 
 message("-- Fetch Packages - done")
 
-target_link_libraries(${MY_PROJECT_NAME}
-  PRIVATE CLI11::CLI11
-)
+add_subdirectory(app)
+add_subdirectory(test)

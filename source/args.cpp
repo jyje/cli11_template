@@ -1,4 +1,4 @@
-#include "args.hpp"
+#include "../source/args.hpp"
 
 Args* Args::_instance = nullptr;
 
@@ -46,6 +46,9 @@ int Args::doEmptyWork() {
     }
 
     std::cout << "Hello, World!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "If you want to run another function instead of this hello message with empty input, you can edit 'Args::" << __func__ << "()'."<< std::endl;
+    std::cout << "If you want to show a help message with empty input, you can set 'Args::_showing_empty_help' as 'true' in 'args.hpp'."<< std::endl;
 
     return EXIT_SUCCESS;
 }
@@ -66,6 +69,6 @@ void Args::doMain() {
         ->default_val<std::string>("in progress...");
     
     sub->final_callback([&]() {
-        exit(Core::doProcess(this->process_number, this->processing_duration, this->some_message));
+        exit(Method::doProcess(this->process_number, this->processing_duration, this->some_message));
     });
 }

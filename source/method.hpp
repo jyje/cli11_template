@@ -1,10 +1,13 @@
-#ifndef _CORE_HPP
-#define _CORE_HPP
+#ifndef _METHOD_HPP
+#define _METHOD_HPP
 
 #include <thread>
-#include "progress.hpp"
+#include <sstream>
+#include <vector>
+#include "../include/progress.hpp"
+#include "../source/args.hpp"
 
-namespace Core {
+namespace Method {
     static int doProcess(int number, int duration, std::string message) {
 
         progress::Time time;
@@ -15,7 +18,7 @@ namespace Core {
         std::stringstream stream{message};
 
         for (int index = 0; index < number; index ++) {            
-            std::this_thread::sleep_for(std::chrono::milliseconds(duration)); // 'thread' included
+            std::this_thread::sleep_for(std::chrono::milliseconds(duration));
             
             time.toc(true);
             time.check(float(index + 1), float(number), &stream);
